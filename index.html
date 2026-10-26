@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<title>MinePilot — калькулятор майнинга</title>
+<style>
+:root{--bg:#0b1020;--panel:#121a2d;--panel2:#172238;--line:#263650;--text:#edf3ff;--muted:#91a2bd;--green:#5ee0a0;--cyan:#66d9ef;--orange:#ffbe69;--red:#ff7185;--purple:#a99bff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top left,#17294a 0%,#0b1020 45%,#090d18 100%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.app{max-width:1240px;margin:auto;padding:28px 20px 44px}.top{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:24px}.brand{display:flex;align-items:center;gap:12px}.logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#65e6ad,#4cb7e7);display:grid;place-items:center;color:#06121c;font-weight:900;font-size:23px;box-shadow:0 8px 30px #55d9ad2b}.eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);font-weight:800}.brand h1{font-size:24px;letter-spacing:-.8px;margin:2px 0}.subtitle{color:var(--muted);font-size:13px}.status{border:1px solid #2d4b47;color:var(--green);border-radius:999px;padding:8px 12px;font-size:12px;white-space:nowrap}
+.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,.8fr);gap:18px;align-items:start}.left,.right{display:grid;gap:18px}.panel{background:linear-gradient(160deg,#151f34f2,#10182af2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 14px 40px #00000016}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.section-head h2{font-size:16px;margin:0;letter-spacing:-.2px}.hint{font-size:12px;color:var(--muted);margin-top:5px}.btn{border:1px solid #34516a;background:#1a3045;color:#dffaff;border-radius:11px;padding:10px 13px;font-weight:700;cursor:pointer;transition:.15s}.btn:hover{transform:translateY(-1px);filter:brightness(1.15)}.btn.primary{background:linear-gradient(135deg,#66e2a6,#52c9dc);border:0;color:#081722}.btn.danger{color:var(--red);background:#301a2a;border-color:#593044;padding:7px 10px}.cards{display:grid;gap:12px}.gpu{border:1px solid #2b3c58;background:linear-gradient(135deg,#17243a,#121c2f);border-radius:16px;padding:16px}.gpu-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.gpu-title{display:flex;align-items:center;gap:11px}.gpu-icon{width:38px;height:38px;border-radius:12px;background:#253d52;display:grid;place-items:center;color:var(--cyan);font-size:18px}.gpu-title strong{display:block;font-size:14px}.gpu-title small{color:var(--muted);font-size:11px}.fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 12px;align-items:start}.field{min-width:0;display:flex;flex-direction:column;align-items:stretch}.field label{display:flex;align-items:flex-start;line-height:1.35;min-height:30px;color:var(--muted);font-size:11px;margin:0 0 7px}.field input,.field select{width:100%;height:42px;border:1px solid #30415d;background:#0c1425;color:var(--text);border-radius:9px;padding:10px 9px;outline:none;min-width:0;font:inherit;font-size:13px;display:block}.field input:focus,.field select:focus{border-color:var(--cyan);box-shadow:0 0 0 2px #66d9ef18}.unit{position:relative}.unit{width:100%}.unit span{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:#7e91ac;font-size:11px;line-height:1;pointer-events:none}.unit input{padding-right:48px}.gpu-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:13px;padding-top:12px;border-top:1px solid #283750;color:var(--muted);font-size:12px;flex-wrap:wrap}.gpu-foot b{color:var(--green);font-size:14px}.gpu-payback{flex-basis:100%;display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}.gpu-payback strong{color:var(--cyan)}.summary{background:linear-gradient(140deg,#173b3d,#142a3a 55%,#17213a);border-color:#2c5b5b}.summary .label{color:#a7c8ce;font-size:12px}.bigprofit{font-size:34px;font-weight:850;letter-spacing:-1.4px;margin:6px 0}.positive{color:var(--green)}.negative{color:var(--red)}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}.stat{background:#0b1523a8;border:1px solid #ffffff0d;border-radius:13px;padding:12px}.stat span{display:block;color:var(--muted);font-size:11px;margin-bottom:7px}.stat strong{font-size:18px;letter-spacing:-.4px}.stat small{display:block;color:#7e91ac;font-size:10px;margin-top:4px}.barbox{margin-top:18px}.barhead{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:8px}.bar{height:9px;background:#0a1422;border-radius:99px;overflow:hidden;display:flex}.bar .revenue{background:var(--green)}.bar .power{background:var(--orange)}.bar .fees{background:var(--purple)}.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:11px;color:var(--muted)}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px}.settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px;align-items:start}.equipment-list{display:grid;gap:10px;margin-top:12px}.equipment-row{display:grid;grid-template-columns:minmax(150px,1.35fr) minmax(125px,1.1fr) minmax(70px,.55fr) minmax(90px,.7fr) auto;gap:10px;align-items:end;padding:12px;border:1px solid #283750;border-radius:12px;background:#0b152344}.equipment-row .field label{min-height:22px}.equipment-row .field input,.equipment-row .field select{height:38px}.equipment-summary{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px;padding:12px;border-radius:10px;background:#0b1523a8;color:var(--muted);font-size:12px}.equipment-summary strong{color:var(--cyan)}@media(max-width:600px){.equipment-row{grid-template-columns:1fr 1fr}.equipment-row .equip-name,.equipment-row .cpu-model-field{grid-column:1/-1}.equipment-row .remove-equipment{grid-column:1/-1;width:100%}}.wide{grid-column:1/-1}.note{font-size:11px;line-height:1.55;color:var(--muted);margin-top:12px}.chart{width:100%;height:190px;display:block}.chart-label{fill:#90a1bb;font-size:10px}.chart-grid{stroke:#283750;stroke-width:1}.chart-line{fill:none;stroke:var(--cyan);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}.chart-area{fill:url(#area)}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:430px}th,td{text-align:right;padding:11px 8px;border-bottom:1px solid #263650;font-size:12px}th{color:var(--muted);font-weight:600}td:first-child,th:first-child{text-align:left}td:first-child{color:#dbe6f8;font-weight:650}.empty{color:var(--muted);text-align:center;padding:24px}.footer{margin-top:18px;text-align:center;color:#6f809c;font-size:11px;line-height:1.6}.pill{display:inline-block;border-radius:7px;background:#20344a;color:#b7d4ec;padding:4px 7px;font-size:10px}.actions{display:flex;gap:8px;flex-wrap:wrap}.smalllabel{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.right{grid-row:1}.app{padding:18px 12px 30px}.panel{padding:16px}.bigprofit{font-size:30px}}
+@media(max-width:500px){.top{align-items:flex-start}.status{display:none}.fields{grid-template-columns:1fr}.fields .field:last-child:nth-child(odd){grid-column:auto}.settings{grid-template-columns:1fr}.wide{grid-column:auto}.section-head{align-items:flex-start}.brand h1{font-size:21px}}
+
+/* MinePilot HI-TECH visual refresh */
+:root{--bg:#030814;--panel:#071327;--panel2:#0a1a33;--line:#123a63;--text:#e7f7ff;--muted:#82a9c9;--green:#36f5c5;--cyan:#23d9ff;--orange:#ffc66d;--red:#ff668c;--purple:#8b7cff}
+html{background:#030814;scroll-behavior:smooth}
+body{background:radial-gradient(ellipse at 50% -18%,#123b70 0%,#061329 38%,#030814 76%),linear-gradient(120deg,#030814,#071326);background-attachment:fixed;color:var(--text);position:relative;isolation:isolate}
+body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(#1c9fff0a 1px,transparent 1px),linear-gradient(90deg,#1c9fff0a 1px,transparent 1px);background-size:36px 36px;mask-image:linear-gradient(to bottom,black,transparent 90%)}
+body:after{content:"";position:fixed;inset:0;z-index:5;pointer-events:none;background:linear-gradient(transparent 50%,#20baff05 50%);background-size:100% 4px;opacity:.22}
+.app{max-width:1420px;padding:26px 22px 48px}
+.top{position:relative;padding:0 0 20px;margin-bottom:22px;border-bottom:1px solid #164a75}
+.top:after{content:"";position:absolute;bottom:-1px;left:0;width:230px;height:2px;background:linear-gradient(90deg,var(--cyan),transparent);box-shadow:0 0 14px #23d9ff90}
+.logo{border-radius:12px;background:linear-gradient(145deg,#19e3ff,#2774ff 55%,#7d5cff);color:#020a19;box-shadow:0 0 22px #18cfff55,inset 0 0 0 1px #ffffff55;position:relative}
+.brand h1{font-size:29px;letter-spacing:-1px;text-shadow:0 0 24px #27cfff45}
+.eyebrow{color:var(--cyan);letter-spacing:3px}
+.subtitle{color:#8cb5d5}
+.status{border:1px solid #166c78;background:#05272e88;color:#5affdb;border-radius:8px;padding:10px 14px;box-shadow:inset 0 0 18px #16e9c90a,0 0 18px #16e9c910}
+.grid{gap:20px;grid-template-columns:minmax(0,1.55fr) minmax(310px,.8fr)}
+.left,.right{gap:20px}
+.panel{position:relative;overflow:hidden;background:linear-gradient(145deg,#07162bf2 0%,#061022f5 72%,#08152af2);border:1px solid #12406b;border-radius:15px;padding:20px;box-shadow:0 16px 44px #0008,inset 0 1px #6bdcff0a;backdrop-filter:blur(8px)}
+.panel:before{content:"";position:absolute;left:0;top:0;width:74px;height:2px;background:linear-gradient(90deg,var(--cyan),transparent);box-shadow:0 0 12px #23d9ff75}
+.panel:after{content:"";position:absolute;right:0;top:0;width:2px;height:48px;background:linear-gradient(var(--cyan),transparent);opacity:.5;pointer-events:none}
+.section-head{position:relative;z-index:1;border-bottom:1px solid #123252;padding-bottom:12px;margin-bottom:16px}
+.section-head h2{font-size:16px;letter-spacing:.15px;color:#dff7ff;text-shadow:0 0 15px #1dcfff18}
+.hint,.note{color:#82a9c9}
+.btn{border:1px solid #15577a;background:linear-gradient(135deg,#0b2744,#0b1a31);color:#c9f6ff;border-radius:8px;box-shadow:inset 0 1px #ffffff0b;transition:transform .18s,border-color .18s,box-shadow .18s}
+.btn:hover{transform:translateY(-2px);border-color:var(--cyan);box-shadow:0 0 18px #1cdcff20,inset 0 1px #ffffff10;filter:none}
+.btn.primary{background:linear-gradient(110deg,#18d9e8,#328aff 70%,#7363ff);color:#02101e;border:0;box-shadow:0 0 18px #13bff32a;font-weight:800}
+.btn.danger{background:#2b1024;border-color:#6b254a;color:#ff8fb1}
+.pill{background:#08283e;border:1px solid #14577c;color:#6ceaff;border-radius:6px;letter-spacing:.3px}
+.cards{gap:13px}
+.gpu{background:linear-gradient(120deg,#0a1d36,#071327 75%);border:1px solid #17456e;border-radius:12px;box-shadow:inset 0 1px #a3e7ff09;transition:border-color .2s,box-shadow .2s}
+.gpu:hover{border-color:#1a8fc2;box-shadow:0 0 22px #0da9e817,inset 0 1px #a3e7ff0b}
+.gpu-icon{background:linear-gradient(145deg,#0b3b5b,#12224b);border:1px solid #166b91;color:#4ceaff;box-shadow:0 0 14px #15d4ff18}
+.gpu-title strong{color:#e2f7ff}
+.gpu-foot{border-top:1px solid #143958}
+.gpu-foot b,.gpu-payback strong{color:var(--green);text-shadow:0 0 12px #36f5c522}
+.field label{color:#8fb4d2;font-size:11px;letter-spacing:.12px}
+.field input,.field select{background:#030d1d;border:1px solid #174366;border-radius:7px;color:#e6f8ff;box-shadow:inset 0 2px 8px #0005;transition:border-color .15s,box-shadow .15s}
+.field input:hover,.field select:hover{border-color:#286b91}
+.field input:focus,.field select:focus{border-color:var(--cyan);box-shadow:0 0 0 2px #23d9ff1d,0 0 15px #23d9ff12}
+.field input[readonly]{background:#07182a;color:#57e8ff;border-color:#15516f}
+.unit span{color:#66a6c9}
+.equipment-row{background:#051226;border-color:#123858;border-radius:10px;box-shadow:inset 0 1px #ffffff06}
+.equipment-row:hover{border-color:#1b6c91}
+.equipment-summary{background:linear-gradient(100deg,#06182c,#08213a);border:1px solid #154768;color:#8bb8d6}
+.equipment-summary strong{color:var(--cyan);text-shadow:0 0 12px #23d9ff26}
+.summary{background:linear-gradient(145deg,#062d36,#071d32 60%,#0a1630);border-color:#117b80;box-shadow:0 0 26px #00f0c50b,inset 0 1px #b2fff30d}
+.summary .label{color:#8fe9e3}
+.bigprofit{color:#e9ffff;text-shadow:0 0 22px #23d9ff25}
+.positive{color:#38f5c7;text-shadow:0 0 15px #36f5c522}
+.negative{color:#ff668c}
+.stat{background:#030f20;border:1px solid #123b5c;border-radius:10px;box-shadow:inset 0 1px #ffffff08}
+.stat span{color:#85abc9}
+.stat strong{color:#e3faff}
+.bar{background:#020a17;border:1px solid #143454}
+.bar .revenue{background:linear-gradient(90deg,#18cba6,#43f7c4);box-shadow:0 0 12px #36f5c555}
+.bar .power{background:linear-gradient(90deg,#eaa544,#ffd783)}
+.bar .fees{background:linear-gradient(90deg,#7b6bff,#b4a8ff)}
+.chart-grid{stroke:#123252}.chart-label{fill:#7ea9ca}
+.table-wrap{border:1px solid #123b5d;border-radius:9px}
+table{border-collapse:separate;border-spacing:0;background:#040f20}
+th{background:#0a203a;color:#83b6d8;border-bottom:1px solid #174366;font-size:11px;letter-spacing:.15px}
+td{border-bottom:1px solid #102c49;color:#cde8fa}
+td:first-child{color:#e3f6ff}
+tbody tr:hover td{background:#0b2740}
+tr:last-child td{border-bottom:0}
+.empty{color:#80a8c7}
+.footer{color:#6287a6}
+.actions{align-items:center}
+#extraPower{font-weight:800;color:#56e9ff}
+#hoursBadge{box-shadow:0 0 14px #23d9ff12}
+@media(max-width:850px){.app{padding:16px 12px 30px}.grid{grid-template-columns:1fr}.panel{padding:16px}.right{grid-row:auto}}
+@media(max-width:500px){.top{gap:12px}.brand h1{font-size:24px}.panel{border-radius:12px}.section-head{gap:8px}.btn{padding:9px 10px}.status{display:none}}
+
+
+
+/* MinePilot v19 — consistent typography and alignment */
+.app{font-variant-numeric:tabular-nums}
+.panel,.gpu,.stat{ text-align:left }
+.section-head{align-items:center}
+.section-head h2{line-height:1.35}
+.field label{min-height:34px;align-items:center;line-height:1.35;margin-bottom:7px}
+.equipment-row .field label{min-height:34px}
+.field input,.field select{text-align:left;line-height:1.2}
+.field input[type="number"]{text-align:left}
+.gpu-top{align-items:center}
+.gpu-title{min-width:0}
+.gpu-title>div{min-width:0}
+.gpu-title strong,.gpu-title small{line-height:1.4}
+.gpu-foot,.gpu-payback,.equipment-summary,.barhead{align-items:center;line-height:1.5}
+.gpu-payback span,.gpu-foot span{line-height:1.5}
+.summary .label,.stat span,.stat small,.hint,.note{line-height:1.5}
+.bigprofit{line-height:1.15;overflow-wrap:anywhere}
+.stat{display:flex;flex-direction:column;justify-content:flex-start;min-width:0}
+.stat strong{line-height:1.3;overflow-wrap:anywhere}
+.legend{align-items:center;line-height:1.5}
+th,td{vertical-align:middle;line-height:1.45}
+th{white-space:normal}
+.actions{align-items:center}
+.btn{line-height:1.25;display:inline-flex;align-items:center;justify-content:center;text-align:center}
+.pill{line-height:1.3}
+.empty{text-align:center}
+@media(max-width:600px){
+  .field label,.equipment-row .field label{min-height:0;align-items:flex-start}
+  .gpu-payback{align-items:flex-start}
+  .gpu-payback span{min-width:0}
+  .stat strong{font-size:17px}
+}
+
+
+
+/* MinePilot v20 — period summary table fits its panel without horizontal scrolling */
+.table-wrap{width:100%;max-width:100%;overflow-x:hidden;box-sizing:border-box}
+.table-wrap table{width:100%;min-width:0;table-layout:fixed;border-collapse:separate}
+.table-wrap th,.table-wrap td{box-sizing:border-box;padding:10px 5px;font-size:clamp(9px,2.5vw,12px);line-height:1.35;white-space:normal;overflow-wrap:anywhere}
+.table-wrap th:first-child,.table-wrap td:first-child{width:40%;text-align:left;overflow-wrap:break-word}
+.table-wrap th:not(:first-child),.table-wrap td:not(:first-child){width:20%;text-align:right;font-variant-numeric:tabular-nums}
+@media(max-width:500px){.table-wrap th,.table-wrap td{padding:9px 4px;font-size:10px}.table-wrap th:first-child,.table-wrap td:first-child{width:39%}.table-wrap th:not(:first-child),.table-wrap td:not(:first-child){width:20.33%}}
+
+
+/* MinePilot v21 — consistent GPU field alignment */
+.gpu .fields{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px 18px;
+  align-items:stretch;
+}
+.gpu .field{min-width:0;}
+.gpu .field label{
+  min-height:38px;
+  margin:0 0 8px;
+  display:flex;
+  flex-wrap:wrap;
+  align-content:flex-start;
+  align-items:baseline;
+  gap:3px 5px;
+  line-height:1.45;
+  font-size:12px;
+  color:#9fc1dd;
+}
+.gpu .field label .muted{font-size:11px;line-height:1.4;color:#7699b8;}
+.gpu .field input,.gpu .field select{height:42px;border-radius:9px;}
+.gpu .gpu-foot{margin-top:16px;padding-top:14px;}
+.gpu .gpu-payback{padding-top:2px;}
+@media(max-width:520px){
+  .gpu .fields{grid-template-columns:minmax(0,1fr);gap:12px;}
+  .gpu .field label{min-height:0;margin-bottom:7px;}
+}
+
+
+/* Telegram Mini App safe-area and compact viewport */
+body{padding-bottom:env(safe-area-inset-bottom)}
+.app{padding-top:max(18px,env(safe-area-inset-top));padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
+button,input,select{touch-action:manipulation}
+@media(max-width:600px){.app{padding-bottom:calc(24px + env(safe-area-inset-bottom))}.top{gap:8px}.panel{border-radius:16px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div class="brand"><div class="logo">M</div><div><div class="eyebrow">MINING ANALYTICS</div><h1>MinePilot</h1><div class="subtitle">Калькулятор доходности майнинг-фермы</div></div></div>
+  <div class="status">● Локальный расчёт · без регистрации</div>
+</header>
+<div class="grid">
+<main class="left">
+<section class="panel">
+  <div class="section-head"><div><h2>Видеокарты</h2><div class="hint">Доход указан за 24 часа и масштабируется по времени работы</div></div><div class="actions"><button class="btn" id="importCsvBtn">Импорт CSV</button><input id="importCsvFile" type="file" accept=".csv,text/csv" hidden><button class="btn primary" id="addGpu">＋ Добавить GPU</button></div></div>
+<div class="note" id="kryptexStatus" role="status">Автозагрузка отключена: это автономный HTML-файл. Доход вводится вручную или импортируется из CSV. Хешрейт и его единица доступны через импорт CSV, но не отображаются в карточках видеокарт.</div>
+  <div id="gpuList" class="cards"></div><div class="note">При выборе модели подставляется справочная ориентировочная цена видеокарты в РФ; цена не обновляется из интернета и её можно отредактировать под фактическую покупку. В списке указана справочная пиковая/типичная мощность видеокарты по спецификациям модели. При выборе модели значение потребления подставляется автоматически в редактируемое поле; у конкретных версий ASUS, MSI, Gigabyte и других производителей оно может отличаться. Для расчёта майнинга можно вручную указать фактическое потребление.</div>
+</section>
+<section class="panel">
+  <div class="section-head"><div><h2>Параметры фермы</h2><div class="hint">Настраиваемые параметры фермы</div></div><span class="pill" id="hoursBadge">24 ч/сут</span></div>
+  <div class="settings">
+    <div class="field"><label for="tariff">Тариф электричества</label><div class="unit"><input id="tariff" type="number" min="0" step="0.01" value="3.96"><span>₽/кВт·ч</span></div></div>
+    <div class="field"><label for="operatingHours">Время работы фермы в сутки</label><div class="unit"><input id="operatingHours" type="number" min="0" max="24" step="0.5" value="24"><span>ч/сут</span></div></div>
+    <div class="field"><label>Дополнительное потребление (расчётное)</label><div class="unit"><input id="extraPower" type="number" min="0" step="1" value="70" readonly aria-readonly="true"><span>Вт</span></div></div>
+  </div>
+  <div class="section-head" style="margin:18px 0 8px"><div><h2 style="font-size:14px">Оборудование фермы</h2><div class="hint">Выбери комплектующие; для CPU доступен список моделей с ориентировочной мощностью. Все значения можно изменить вручную</div></div><button class="btn" id="addEquipment" type="button">＋ Добавить</button></div>
+  <div id="equipmentList" class="equipment-list"></div>
+  <div class="equipment-summary"><span>Потребление оборудования без видеокарт</span><strong id="equipmentTotal">70 Вт</strong></div>
+  <div class="note">Дополнительное потребление складывается из выбранных компонентов с учётом количества. Для упрощения расчёта вводится потребление каждого компонента; КПД блока питания (90%) применяется отдельно к общей нагрузке. Справочные значения ориентировочные — можно скорректировать под своё оборудование.</div>
+</section>
+<section class="panel">
+  <div class="section-head"><div><h2>Доход и расходы по периодам</h2><div class="hint">Расчёт обновляется сразу после изменения данных</div></div></div>
+  <svg id="chart" class="chart" viewBox="0 0 600 190" role="img" aria-label="График дохода, расходов и прибыли"></svg>
+  <div class="legend"><span><i class="dot" style="background:var(--green)"></i>Доход после комиссии</span><span><i class="dot" style="background:var(--orange)"></i>Электричество</span><span><i class="dot" style="background:var(--cyan)"></i>Прибыль после электричества</span></div>
+</section>
+</main>
+<aside class="right">
+<section class="panel summary">
+  <div class="label">Расчётная прибыль за 30 дней</div><div class="bigprofit positive" id="profitMonth">—</div><div class="label" id="profitCaption">после комиссии, электричества и других расходов</div>
+  <div class="stats">
+    <div class="stat"><span>Доход до комиссии / мес.</span><strong id="grossMonth">—</strong><small>сумма доходов всех GPU</small></div>
+    <div class="stat"><span>Электричество / мес.</span><strong id="powerMonth">—</strong><small id="kwhMonth">— кВт·ч</small></div>
+    <div class="stat"><span>Потребление из розетки</span><strong id="wallPower">—</strong><small>с учётом КПД БП</small></div>
+    <div class="stat"><span>Стоимость всех видеокарт</span><strong id="gpuInvestment">—</strong><small>общая цена оборудования</small></div>
+    <div class="stat"><span>Окупаемость фермы</span><strong id="farmPayback">—</strong><small id="farmPaybackNote">по текущей чистой прибыли</small></div>
+  </div>
+  <div class="barbox"><div class="barhead"><span>Распределение дохода за месяц</span><span id="margin">—</span></div><div class="bar"><div class="revenue" id="barRevenue"></div><div class="power" id="barPower"></div><div class="fees" id="barFees"></div></div><div class="legend"><span><i class="dot" style="background:var(--green)"></i>Прибыль</span><span><i class="dot" style="background:var(--orange)"></i>Электричество</span><span><i class="dot" style="background:var(--purple)"></i>Комиссия</span></div></div>
+</section>
+<section class="panel">
+  <div class="section-head"><div><h2>Сводка по периодам</h2><div class="hint">С учётом заданного режима работы</div></div></div>
+  <div class="table-wrap"><table><thead><tr><th>Показатель</th><th>Сутки</th><th>30 дней</th><th>Год</th></tr></thead><tbody id="periodTable"></tbody></table></div>
+</section>
+<section class="panel">
+  <div class="section-head"><div><h2>Эффективность видеокарт</h2><div class="hint">Сравнение дохода, электричества и отдачи на вложенную стоимость</div></div></div>
+  <div id="efficiencyList"></div>
+</section>
+<div class="actions"><button class="btn" id="reset">↺ Сбросить пример</button><button class="btn" id="export">⇩ Экспорт CSV</button></div>
+</aside>
+</div>
+<div class="footer">MinePilot · автономный HTML-калькулятор. Данные вводятся вручную или импортируются из CSV; прямое подключение к Kryptex не используется.<br>Потребление CPU в списке — справочная мощность класса TDP/PBP, а не точное измерение из розетки; реальный расход зависит от нагрузки и настроек. Результат — оценка, а не гарантия будущего дохода. Износ оборудования, простой и изменение курса/сложности учитываются только при ручном добавлении расходов.</div>
+</div>
+<script>
+// Telegram Mini App bootstrap: works in Telegram and remains usable in a normal browser.
+(function initTelegramMiniApp(){
+  const tg = window.Telegram && window.Telegram.WebApp;
+  if (!tg) return;
+  try {
+    tg.ready();
+    tg.expand();
+    tg.setHeaderColor('#030814');
+    tg.setBackgroundColor('#030814');
+    if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
+  } catch (e) { /* keep calculator usable if a client lacks an optional API */ }
+})();
+const $=id=>document.getElementById(id);
+let nextId=3;
+const seed=()=>[
+{id:1,name:"NVIDIA RTX 3070 Ti",power:320,hash:0,unit:"MH/s",income:180,cost:54000},
+{id:2,name:"NVIDIA RTX 5070",power:250,hash:0,unit:"MH/s",income:250,cost:93500}
+];
+let gpus=seed();
+let nextEquipmentId=6;
+const equipmentOptions={
+  'Процессор (CPU, без GPU)':35,
+  'Материнская плата':15,
+  'Модуль оперативной памяти (RAM)':3,
+  'SSD':4,
+  'Жёсткий диск (HDD)':7,
+  'Вентилятор корпуса':5,
+  'Райзер PCIe':5,
+  'Водяная помпа':10,
+  'Сетевая карта':3,
+  'Контроллер / USB-хаб':3,
+  'Другое оборудование':5
+};
+const cpuModels={
+  'Не указан / вручную':35,
+  'Intel Core i5-10400':65,'Intel Core i5-11400':65,'Intel Core i5-12400':65,'Intel Core i5-13400':65,'Intel Core i5-14400':65,
+  'Intel Core i5-12600K':125,'Intel Core i5-13600K':125,'Intel Core i5-14600K':125,'Intel Core i5-14600KF':125,
+  'Intel Core i7-12700K':125,'Intel Core i7-13700K':125,'Intel Core i7-14700K':125,
+  'Intel Core i9-12900K':125,'Intel Core i9-13900K':125,'Intel Core i9-14900K':125,
+  'AMD Ryzen 5 3600':65,'AMD Ryzen 5 5500':65,'AMD Ryzen 5 5600':65,'AMD Ryzen 5 5600X':65,'AMD Ryzen 5 7500F':65,'AMD Ryzen 5 7600':65,'AMD Ryzen 5 7600X':105,
+  'AMD Ryzen 7 5700X':65,'AMD Ryzen 7 5800X':105,'AMD Ryzen 7 5800X3D':105,'AMD Ryzen 7 7700':65,'AMD Ryzen 7 7700X':105,'AMD Ryzen 7 7800X3D':120,
+  'AMD Ryzen 9 5900X':105,'AMD Ryzen 9 5950X':105,'AMD Ryzen 9 7900':65,'AMD Ryzen 9 7900X':170,'AMD Ryzen 9 7950X':170,
+  'Другая модель (ввести вручную)':35
+};
+const seedEquipment=()=>[
+  {id:1,name:'Процессор (CPU, без GPU)',model:'Не указан / вручную',qty:1,power:35},
+  {id:2,name:'Материнская плата',qty:1,power:15},
+  {id:3,name:'Модуль оперативной памяти (RAM)',qty:2,power:3},
+  {id:4,name:'SSD',qty:1,power:4},
+  {id:5,name:'Вентилятор корпуса',qty:2,power:5}
+];
+let equipment=seedEquipment();
+const fmt=(n,d=0)=>Number.isFinite(n)?n.toLocaleString('ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
+const rub=n=>fmt(n,2)+' ₽';
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function equipmentTemplate(e){
+ const options=Object.keys(equipmentOptions).map(name=>`<option value="${esc(name)}" ${e.name===name?'selected':''}>${esc(name)}</option>`).join('');
+ const isCpu=e.name==='Процессор (CPU, без GPU)';
+ const modelOptions=Object.entries(cpuModels).map(([name,watts])=>`<option value="${esc(name)}" ${((e.model||'Не указан / вручную')===name)?'selected':''}>${esc(name)} — ${watts} Вт</option>`).join('');
+ return `<div class="equipment-row" data-equipment-id="${e.id}">
+ <div class="field equip-name"><label>Тип оборудования</label><select data-equip-k="name">${options}</select></div>
+ <div class="field cpu-model-field" style="${isCpu?'':'display:none'}"><label>Модель процессора</label><select data-equip-k="model">${modelOptions}</select></div>
+ <div class="field"><label>Количество</label><input data-equip-k="qty" type="number" min="0" step="1" value="${e.qty}"></div>
+ <div class="field"><label>Мощность одной единицы</label><div class="unit"><input data-equip-k="power" type="number" min="0" step="1" value="${e.power}"><span>Вт</span></div></div>
+ <button class="btn danger remove-equipment" type="button">Удалить</button></div>`;
+}
+function renderEquipment(){
+ $('equipmentList').innerHTML=equipment.map(equipmentTemplate).join('')||'<div class="empty">Дополнительные компоненты не выбраны.</div>';
+ document.querySelectorAll('.equipment-row').forEach(row=>{
+  row.querySelectorAll('[data-equip-k]').forEach(input=>input.addEventListener('input',()=>{
+   const e=equipment.find(x=>x.id===+row.dataset.equipmentId); if(!e)return;
+   const k=input.dataset.equipK;
+   if(k==='name'){
+    e.name=input.value;
+    if(e.name==='Процессор (CPU, без GPU)') { e.model=e.model||'Не указан / вручную'; e.power=cpuModels[e.model]??35; }
+    else { e.power=equipmentOptions[e.name]??5; }
+    renderEquipment();
+    return;
+   }
+   if(k==='model'){
+    e.model=input.value;
+    e.power=cpuModels[e.model]??e.power;
+    const power=row.querySelector('[data-equip-k="power"]');if(power)power.value=e.power;
+   } else e[k]=Math.max(0,Number(input.value)||0);
+   calculate();
+  }));
+  row.querySelector('.remove-equipment').addEventListener('click',()=>{equipment=equipment.filter(e=>e.id!==+row.dataset.equipmentId);renderEquipment();calculate();});
+ });
+ calculate();
+}
+$('addEquipment').addEventListener('click',()=>{const name='Другое оборудование';equipment.push({id:nextEquipmentId++,name,model:'Не указан / вручную',qty:1,power:equipmentOptions[name]});renderEquipment();});
+
+const gpuModelOptions=[
+"NVIDIA RTX 5090","NVIDIA RTX 5080","NVIDIA RTX 5070 Ti","NVIDIA RTX 5070","NVIDIA RTX 5060 Ti","NVIDIA RTX 5060",
+"NVIDIA RTX 4090","NVIDIA RTX 4080 SUPER","NVIDIA RTX 4080","NVIDIA RTX 4070 Ti SUPER","NVIDIA RTX 4070 Ti","NVIDIA RTX 4070 SUPER","NVIDIA RTX 4070","NVIDIA RTX 4060 Ti","NVIDIA RTX 4060",
+"NVIDIA RTX 3090 Ti","NVIDIA RTX 3090","NVIDIA RTX 3080 Ti","NVIDIA RTX 3080","NVIDIA RTX 3070 Ti","NVIDIA RTX 3070","NVIDIA RTX 3060 Ti","NVIDIA RTX 3060","NVIDIA RTX 3050",
+"NVIDIA RTX 2080 Ti","NVIDIA RTX 2080 SUPER","NVIDIA RTX 2080","NVIDIA RTX 2070 SUPER","NVIDIA RTX 2070","NVIDIA RTX 2060 SUPER","NVIDIA RTX 2060",
+"AMD RX 9070 XT","AMD RX 9070","AMD RX 7900 XTX","AMD RX 7900 XT","AMD RX 7800 XT","AMD RX 7700 XT","AMD RX 7600 XT","AMD RX 7600",
+"AMD RX 6950 XT","AMD RX 6900 XT","AMD RX 6800 XT","AMD RX 6800","AMD RX 6750 XT","AMD RX 6700 XT","AMD RX 6600 XT","AMD RX 6600",
+"Другая модель"
+];
+const gpuPeakPower = {"NVIDIA RTX 5090": 575, "NVIDIA RTX 5080": 360, "NVIDIA RTX 5070 Ti": 300, "NVIDIA RTX 5070": 250, "NVIDIA RTX 5060 Ti": 180, "NVIDIA RTX 5060": 145, "NVIDIA RTX 4090": 450, "NVIDIA RTX 4080 SUPER": 320, "NVIDIA RTX 4080": 320, "NVIDIA RTX 4070 Ti SUPER": 285, "NVIDIA RTX 4070 Ti": 285, "NVIDIA RTX 4070 SUPER": 220, "NVIDIA RTX 4070": 200, "NVIDIA RTX 4060 Ti": 160, "NVIDIA RTX 4060": 115, "NVIDIA RTX 3090 Ti": 450, "NVIDIA RTX 3090": 350, "NVIDIA RTX 3080 Ti": 350, "NVIDIA RTX 3080": 320, "NVIDIA RTX 3070 Ti": 290, "NVIDIA RTX 3070": 220, "NVIDIA RTX 3060 Ti": 200, "NVIDIA RTX 3060": 170, "NVIDIA RTX 3050": 130, "NVIDIA RTX 2080 Ti": 250, "NVIDIA RTX 2080 SUPER": 250, "NVIDIA RTX 2080": 215, "NVIDIA RTX 2070 SUPER": 215, "NVIDIA RTX 2070": 175, "NVIDIA RTX 2060 SUPER": 175, "NVIDIA RTX 2060": 160, "AMD RX 9070 XT": 304, "AMD RX 9070": 220, "AMD RX 7900 XTX": 355, "AMD RX 7900 XT": 315, "AMD RX 7800 XT": 263, "AMD RX 7700 XT": 245, "AMD RX 7600 XT": 190, "AMD RX 7600": 165, "AMD RX 6950 XT": 335, "AMD RX 6900 XT": 300, "AMD RX 6800 XT": 300, "AMD RX 6800": 250, "AMD RX 6750 XT": 250, "AMD RX 6700 XT": 230, "AMD RX 6600 XT": 160, "AMD RX 6600": 132};
+
+// Справочные ориентиры розничных цен в РФ (не live-цены); при выборе модели цена подставляется, но остаётся редактируемой.
+const gpuReferencePrice = {
+"NVIDIA RTX 5090":500000,"NVIDIA RTX 5080":147000,"NVIDIA RTX 5070 Ti":136500,"NVIDIA RTX 5070":93500,"NVIDIA RTX 5060 Ti":65000,"NVIDIA RTX 5060":51000,
+"NVIDIA RTX 4090":220000,"NVIDIA RTX 4080 SUPER":170000,"NVIDIA RTX 4080":155000,"NVIDIA RTX 4070 Ti SUPER":125000,"NVIDIA RTX 4070 Ti":115000,"NVIDIA RTX 4070 SUPER":100000,"NVIDIA RTX 4070":90000,"NVIDIA RTX 4060 Ti":65000,"NVIDIA RTX 4060":50000,
+"NVIDIA RTX 3090 Ti":100000,"NVIDIA RTX 3090":85000,"NVIDIA RTX 3080 Ti":70000,"NVIDIA RTX 3080":60000,"NVIDIA RTX 3070 Ti":54000,"NVIDIA RTX 3070":45000,"NVIDIA RTX 3060 Ti":38000,"NVIDIA RTX 3060":32000,"NVIDIA RTX 3050":25000,
+"NVIDIA RTX 2080 Ti":35000,"NVIDIA RTX 2080 SUPER":30000,"NVIDIA RTX 2080":27000,"NVIDIA RTX 2070 SUPER":24000,"NVIDIA RTX 2070":21000,"NVIDIA RTX 2060 SUPER":19000,"NVIDIA RTX 2060":16000,
+"AMD RX 9070 XT":95000,"AMD RX 9070":84500,"AMD RX 7900 XTX":110000,"AMD RX 7900 XT":90000,"AMD RX 7800 XT":70000,"AMD RX 7700 XT":60000,"AMD RX 7600 XT":55000,"AMD RX 7600":45000,
+"AMD RX 6950 XT":65000,"AMD RX 6900 XT":55000,"AMD RX 6800 XT":45000,"AMD RX 6800":40000,"AMD RX 6750 XT":35000,"AMD RX 6700 XT":30000,"AMD RX 6600 XT":25000,"AMD RX 6600":22000
+};
+function gpuModels(current){const names=[...gpuModelOptions];if(current&&!names.includes(current))names.unshift(current);return names.map(x=>{const w=gpuPeakPower[x];const label=w?`${x} — ${w} Вт`:x;return `<option value="${esc(x)}" ${current===x?'selected':''}>${esc(label)}</option>`}).join('');}
+function gpuTemplate(g){return `<article class="gpu" data-id="${g.id}">
+<div class="gpu-top"><div class="gpu-title"><div class="gpu-icon">▤</div><div><strong>GPU ${g.id}</strong><small>Параметры отдельной видеокарты</small></div></div><button class="btn danger remove" title="Удалить видеокарту">Удалить</button></div>
+<div class="fields">
+<div class="field"><label>Модель видеокарты</label><select data-k="name" aria-label="Модель видеокарты">${gpuModels(g.name)}</select></div>
+<div class="field"><label>Потребление, Вт <span class="muted">(автозаполнение, можно изменить)</span></label><div class="unit"><input data-k="power" type="number" min="0" step="1" value="${g.power}"><span>Вт</span></div></div>
+<div class="field"><label>Доход до комиссии / сутки</label><div class="unit"><input data-k="income" type="number" min="0" step="0.01" value="${g.income}"><span>₽</span></div></div>
+<div class="field"><label>Стоимость видеокарты <span class="muted">(справочная, можно изменить)</span></label><div class="unit"><input data-k="cost" type="number" min="0" step="100" value="${g.cost||0}"><span>₽</span></div></div>
+</div>
+<div class="gpu-foot"><span>Прибыль GPU после комиссии и его электричества*</span><b id="gpuNet${g.id}">—</b><div class="gpu-payback"><span>Окупаемость этой видеокарты</span><strong id="gpuPayback${g.id}">—</strong></div></div></article>`}
+function renderGpus(){ $('gpuList').innerHTML=gpus.map(gpuTemplate).join('')||'<div class="empty">Добавь первую видеокарту кнопкой выше.</div>';bindGpuEvents();calculate();}
+function bindGpuEvents(){
+document.querySelectorAll('.gpu').forEach(card=>{
+card.querySelectorAll('[data-k]').forEach(inp=>inp.addEventListener('input',()=>{
+const g=gpus.find(x=>x.id===+card.dataset.id);const k=inp.dataset.k;
+g[k]=k==='name'||k==='unit'?inp.value:(parseFloat(inp.value)||0);
+if(k==='name' && gpuPeakPower[inp.value]){
+  g.power=gpuPeakPower[inp.value];
+  const powerInput=card.querySelector('[data-k="power"]');
+  if(powerInput) powerInput.value=g.power;
+}
+if(k==='name' && gpuReferencePrice[inp.value]){
+  g.cost=gpuReferencePrice[inp.value];
+  const costInput=card.querySelector('[data-k="cost"]');
+  if(costInput) costInput.value=g.cost;
+}
+calculate();
+}));
+card.querySelector('.remove').addEventListener('click',()=>{gpus=gpus.filter(x=>x.id!==+card.dataset.id);renderGpus();});
+});}
+const settings=['tariff','operatingHours'];
+settings.forEach(id=>$(id).addEventListener('input',calculate));
+function calculate(){
+const tariff=Math.max(0,+$('tariff').value||0),extra=equipment.reduce((sum,e)=>sum+Math.max(0,e.qty)*Math.max(0,e.power),0),eff=0.9,fee=0.03,other=0,hours=Math.min(24,Math.max(0,+$('operatingHours').value||0));
+$('hoursBadge').textContent=fmt(hours,1)+' ч/сут';
+$('extraPower').value=fmt(extra,0);$('equipmentTotal').textContent=fmt(extra,0)+' Вт';
+const gpuW=gpus.reduce((s,g)=>s+Math.max(0,g.power),0),investment=gpus.reduce((s,g)=>s+Math.max(0,g.cost||0),0),grossDay=gpus.reduce((s,g)=>s+Math.max(0,g.income),0)*(hours/24),feeDay=grossDay*fee,netRevenueDay=grossDay-feeDay;
+const wallW=(gpuW+extra)/eff,kwhDay=wallW/1000*hours,electricDay=kwhDay*tariff,otherDay=other/30,profitDay=netRevenueDay-electricDay-otherDay;
+const month=v=>v*30,year=v=>v*365;
+$('profitMonth').textContent=rub(month(profitDay));$('profitMonth').className='bigprofit '+(profitDay>=0?'positive':'negative');
+$('profitCaption').textContent=profitDay>=0?'после комиссии, электричества и других расходов':'расходы превышают доход';
+$('grossMonth').textContent=rub(month(grossDay));$('powerMonth').textContent=rub(month(electricDay));$('kwhMonth').textContent=fmt(month(kwhDay),1)+' кВт·ч';
+$('wallPower').textContent=fmt(wallW,0)+' Вт';
+$('gpuInvestment').textContent=rub(investment);
+$('farmPayback').textContent=profitDay>0&&investment>0?fmt(investment/profitDay/30,1)+' мес.':(investment===0?'Укажи цену':'Нет окупаемости');
+$('farmPaybackNote').textContent=profitDay>0&&investment>0?'примерно '+fmt(investment/profitDay,0)+' дней':'нужны цена GPU и положительная прибыль';
+const profitM=month(profitDay),grossM=month(grossDay),feeM=month(feeDay),powerM=month(electricDay),otherM=other;
+const rows=[['Доход до комиссии',grossDay,grossM,year(grossDay)],['Комиссия пула',feeDay,feeM,year(feeDay)],['Электричество',electricDay,powerM,year(electricDay)],['Другие расходы',otherDay,otherM,year(otherDay)],['Чистая прибыль',profitDay,profitM,year(profitDay)],['Энергия, кВт·ч',kwhDay,month(kwhDay),year(kwhDay)]];
+$('periodTable').innerHTML=rows.map((r,i)=>`<tr><td>${r[0]}</td>${r.slice(1).map(v=>`<td>${i===5?fmt(v,1):fmt(v,0)+' ₽'}</td>`).join('')}</tr>`).join('');
+const total=Math.max(.00001,grossM),p=Math.max(0,profitM),pow=Math.max(0,powerM),fees=Math.max(0,feeM);
+$('barRevenue').style.width=Math.min(100,p/total*100)+'%';$('barPower').style.width=Math.min(100,pow/total*100)+'%';$('barFees').style.width=Math.min(100,fees/total*100)+'%';
+$('margin').textContent=fmt(grossM?profitM/grossM*100:0,1)+'% маржа';
+gpus.forEach(g=>{const el=$('gpuNet'+g.id);const gd=Math.max(0,g.income)*(hours/24)*(1-fee)-((Math.max(0,g.power)/eff)/1000*hours*tariff);if(el){el.textContent=rub(gd);el.style.color=gd>=0?'var(--green)':'var(--red)';}const pb=$('gpuPayback'+g.id);if(pb)pb.textContent=(gd>0&&(g.cost||0)>0)?fmt(g.cost/gd/30,1)+' мес.':((g.cost||0)<=0?'Укажи цену':'Нет окупаемости');});
+$('efficiencyList').innerHTML=gpus.length?gpus.map(g=>{const net=Math.max(0,g.income)*(hours/24)*(1-fee),watts=g.power/eff;const electric=(watts/1000*hours*tariff),ratio=electric>0?net/electric:0;const dailyProfit=net-electric;const cost=Math.max(0,g.cost||0);const roi=cost>0?dailyProfit/cost*100:0;const months=dailyProfit>0&&cost>0?cost/dailyProfit/30:null;const per10k=cost>0?dailyProfit*10000/cost:0;const barWidth=cost>0?Math.min(100,Math.max(0,roi)/2*100):0;return `<div style="margin:14px 0;padding:12px;border:1px solid #283750;border-radius:12px;background:#0b152344"><div style="display:flex;justify-content:space-between;gap:8px;font-size:12px"><span>${esc(g.name||'GPU '+g.id)}</span><b style="color:${roi>0?'var(--green)':'var(--orange)'}">${cost>0?fmt(roi,2)+'% в день от цены':'Укажи цену'}</b></div><div style="height:6px;background:#0a1422;border-radius:99px;overflow:hidden;margin-top:7px"><div style="height:100%;width:${barWidth}%;background:${roi>0?'var(--green)':'var(--orange)'};border-radius:99px"></div></div><div class="hint">Доход после комиссии: ${rub(net)} / сут. · электричество: ${rub(electric)} / сут.</div><div class="hint">Чистый результат: <b style="color:${dailyProfit>=0?'var(--green)':'var(--red)'}">${rub(dailyProfit)} / сут.</b> · цена: ${cost>0?rub(cost):'не указана'}</div><div class="hint">Отдача на вложения: ${cost>0?rub(per10k)+' в сутки на каждые 10 000 ₽':'—'} · окупаемость: ${months!==null?fmt(months,1)+' мес.':'нет окупаемости'}</div></div>`}).join(''):'<div class="empty">Нет видеокарт для сравнения.</div>';
+drawChart(grossDay,feeDay,electricDay,profitDay);
+}
+function drawChart(gross,fees,electric,profit){
+const svg=$('chart'),W=600,H=190,pad={l:44,r:12,t:12,b:26},iw=W-pad.l-pad.r,ih=H-pad.t-pad.b;
+const days=[1,7,14,21,30],series=[
+{label:'Доход после комиссии',daily:Math.max(0,gross-fees),c:'#5ee0a0'},
+{label:'Электричество',daily:electric,c:'#ffbe69'},
+{label:'Прибыль',daily:profit,c:'#66d9ef'}
+];
+const max=Math.max(1,...series.flatMap(a=>days.map(d=>Math.max(0,a.daily*d)))),y=v=>pad.t+ih-(v/max)*ih,x=i=>pad.l+i*iw/4;
+let s='<defs><linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#66d9ef" stop-opacity=".24"/><stop offset="100%" stop-color="#66d9ef" stop-opacity="0"/></linearGradient></defs>';
+for(let i=0;i<=4;i++){let yy=pad.t+ih*i/4;s+=`<line x1="${pad.l}" y1="${yy}" x2="${W-pad.r}" y2="${yy}" class="chart-grid"/><text x="${pad.l-8}" y="${yy+4}" text-anchor="end" class="chart-label">${fmt(max*(1-i/4),0)}</text>`}
+series.forEach((a,j)=>{const points=days.map((d,i)=>`${x(i)},${y(Math.max(0,a.daily*d))}`).join(' ');s+=`<polyline points="${points}" fill="none" stroke="${a.c}" stroke-width="${j===2?2.5:1.8}" stroke-linecap="round" stroke-dasharray="${j===1?'5 4':'none'}" opacity="${j===2?1:.8}"/>`;});
+['1 день','7 дней','14 дней','21 день','30 дней'].forEach((t,i)=>s+=`<text x="${x(i)}" y="${H-7}" text-anchor="middle" class="chart-label">${t}</text>`);
+svg.innerHTML=s;
+}
+// Делегирование клика делает добавление надёжнее в мобильных браузерах и встроенных просмотрщиках.
+document.addEventListener('click', (event) => {
+  const addButton = event.target.closest('#addGpu');
+  if (!addButton) return;
+  event.preventDefault();
+  const newGpu = {id: nextId++, name: 'Новая видеокарта', power: 200, hash: 0, unit: 'MH/s', income: 0, cost: 0};
+  gpus.push(newGpu);
+  renderGpus();
+  const newCard = document.querySelector('.gpu[data-id="' + newGpu.id + '"]');
+  if (newCard) {
+    newCard.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+    const nameInput = newCard.querySelector('[data-k="name"]');
+    if (nameInput) nameInput.focus({preventScroll: true});
+  }
+});
+
+// CSV import: works locally in the browser; no server or external fetch required.
+$('importCsvBtn').addEventListener('click', () => $('importCsvFile').click());
+$('importCsvFile').addEventListener('change', async (event) => {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  const status = $('kryptexStatus');
+  try {
+    const raw = (await file.text()).replace(/^\uFEFF/, '');
+    // Parse common CSV/semicolon-separated files, including quoted cells.
+    const firstLine = raw.split(/\r?\n/, 1)[0] || '';
+    const delimiter = (firstLine.match(/;/g) || []).length >= (firstLine.match(/,/g) || []).length ? ';' : ',';
+    const rows = [];
+    let row = [], cell = '', quoted = false;
+    for (let i = 0; i < raw.length; i++) {
+      const ch = raw[i];
+      if (ch === '"' && quoted && raw[i + 1] === '"') { cell += '"'; i++; }
+      else if (ch === '"') quoted = !quoted;
+      else if (ch === delimiter && !quoted) { row.push(cell.trim()); cell = ''; }
+      else if ((ch === '\n' || ch === '\r') && !quoted) {
+        if (ch === '\r' && raw[i + 1] === '\n') i++;
+        row.push(cell.trim());
+        if (row.some(v => v !== '')) rows.push(row);
+        row = []; cell = '';
+      } else cell += ch;
+    }
+    row.push(cell.trim()); if (row.some(v => v !== '')) rows.push(row);
+    if (rows.length < 2) throw new Error('в файле нет строк с данными');
+    const norm = v => String(v || '').toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я0-9]+/g,' ').trim();
+    const headers = rows[0].map(norm);
+    const findCol = names => headers.findIndex(h => names.some(n => h === norm(n) || h.includes(norm(n))));
+    const cols = {
+      name: findCol(['Видеокарта','GPU','GPU name','Model','Device']),
+      power: findCol(['Потребление GPU, Вт','Power W','GPU power','Power']),
+      hash: findCol(['Хешрейт','Hashrate','Hash rate']),
+      unit: findCol(['Единица','Unit','Hashrate unit']),
+      income: findCol(['Доход до комиссии, ₽/сутки','Income RUB/day','Revenue RUB/day','Доход','Income','Revenue']),
+      cost: findCol(['Стоимость GPU, ₽','Стоимость видеокарты','GPU cost RUB','GPU cost','Cost RUB','Cost'])
+    };
+    if (cols.name < 0 || cols.hash < 0 || cols.income < 0) throw new Error('не найдены обязательные колонки: Видеокарта, Хешрейт и Доход');
+    const num = value => {
+      const n = Number(String(value || '').replace(/\s/g,'').replace(',', '.'));
+      return Number.isFinite(n) && n >= 0 ? n : null;
+    };
+    let imported = 0;
+    const importedGpus = [];
+    for (const cells of rows.slice(1)) {
+      const name = cells[cols.name] || '';
+      if (!name) continue;
+      const hash = num(cells[cols.hash]), income = num(cells[cols.income]);
+      if (hash === null || income === null) continue;
+      const cost = cols.cost >= 0 ? num(cells[cols.cost]) : null;
+      const power = cols.power >= 0 ? num(cells[cols.power]) : null;
+      const unitRaw = cols.unit >= 0 ? cells[cols.unit] : 'MH/s';
+      const unit = ['H/s','kH/s','MH/s','GH/s','TH/s'].find(u => u.toLowerCase() === String(unitRaw).toLowerCase()) || 'MH/s';
+      const existing = gpus.find(g => norm(g.name) === norm(name));
+      const target = existing || {id: nextId++, name, power: power === null ? 200 : power, hash: 0, unit, income: 0, cost: 0};
+      target.name = name; target.hash = hash; target.unit = unit; target.income = income;
+      if (cost !== null) target.cost = cost;
+      if (power !== null) target.power = power;
+      if (!existing) importedGpus.push(target);
+      imported++;
+    }
+    if (!imported) throw new Error('не найдено строк с числовым хешрейтом и доходом');
+    gpus.push(...importedGpus);
+    renderGpus();
+    status.textContent = `Импортировано строк: ${imported}. Хешрейт и доход можно редактировать. Проверь единицы измерения и убедись, что доход указан именно в ₽ за сутки.`;
+  } catch (err) {
+    status.textContent = 'Не удалось импортировать CSV: ' + (err.message || 'неверный формат') + '. Используй CSV с колонками Видеокарта, Хешрейт и Доход; можно сначала нажать «Экспорт CSV», отредактировать файл и загрузить его обратно.';
+  } finally {
+    event.target.value = '';
+  }
+});
+
+$('reset').addEventListener('click',()=>{gpus=seed();nextId=3;equipment=seedEquipment();nextEquipmentId=6;$('tariff').value=3.96;$('operatingHours').value=24;renderEquipment();renderGpus();});
+$('export').addEventListener('click',()=>{
+const tariff=+$('tariff').value||0,extra=Math.max(0,+$('extraPower').value||0),eff=0.9,fee=0.03,hours=Math.min(24,Math.max(0,+$('operatingHours').value||0)),other=0;
+const rows=[['Видеокарта','Потребление GPU, Вт','Хешрейт','Единица','Доход до комиссии, ₽/сутки','Стоимость GPU, ₽'],...gpus.map(g=>[g.name,g.power,g.hash,g.unit,g.income,g.cost||0]),[],['Тариф, ₽/кВт·ч',tariff],['Доп. потребление, Вт',extra],['КПД БП, % (исходный)',eff*100],['Комиссия пула, % (исходная)',fee*100],['Другие расходы, ₽/мес (исходные)',other],['Часы работы в сутки',hours]];
+const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
+const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='minepilot-calculation.csv';a.click();URL.revokeObjectURL(url);
+});
+renderEquipment();
+renderGpus();
+</script>
+</body></html>
